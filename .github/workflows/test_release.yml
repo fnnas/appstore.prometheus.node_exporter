@@ -1,0 +1,44 @@
+name: Test Release
+
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+on:
+  workflow_dispatch:
+    inputs:
+      make_release:
+        description: 'Do you want to create a release?'
+        required: true
+        type: boolean
+        default: false
+jobs:
+  job_to_build_appstore_package:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      release_ver: "1.9.1"
+    steps:
+     - name: 下载压缩文件
+       run: |
+         wget https://github.com/prometheus/node_exporter/releases/download/v${{ env.release_ver }}/node_exporter-${{ env.release_ver }}.linux-amd64.tar.gz
+     - name: 解压压缩文件
+       run: |
+         tar -zxvf node_exporter-${{ env.release_ver }}.linux-amd64.tar.gz
+     - name: 移动node_exporter可执行文件
+       run: |
+         mv node_exporter-${{ env.release_ver }}.linux-amd64/node_exporter app/node_exporter
+     - name: 打包app.tgz
+       run: |
+         tar zcvf app.tgz app ui
+         mv app.tgz package/
+     - name: 打包package
+       run: |
+         tar zcvf appstore.prometheus.node_exporter.${{ env.release_ver }}.tgz package
+     - name: 上传应用包
+       uses: actions/upload-artifact@master
+       with:
+         name: appstore.prometheus.node_exporter.${{ env.release_ver }}.tgz
+         path: appstore.prometheus.node_exporter.${{ env.release_ver }}.tgz
