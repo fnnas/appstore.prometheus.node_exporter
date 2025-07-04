@@ -1,4 +1,5 @@
 name: Test Release
+run-name: ${{ github.actor }} build
 
 permissions:
   contents: write
@@ -21,6 +22,12 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       release_ver: "1.9.1"
     steps:
+     - name: Check out repository code
+       uses: actions/checkout@v4
+     - name: List files in the repository
+       run: |
+         pwd
+         ls -l
      - name: 下载压缩文件
        run: |
          wget https://github.com/prometheus/node_exporter/releases/download/v${{ env.release_ver }}/node_exporter-${{ env.release_ver }}.linux-amd64.tar.gz
@@ -29,16 +36,66 @@ jobs:
          tar -zxvf node_exporter-${{ env.release_ver }}.linux-amd64.tar.gz
      - name: 移动node_exporter可执行文件
        run: |
-         mv node_exporter-${{ env.release_ver }}.linux-amd64/node_exporter app/node_exporter
+         mv node_exporter-${{ env.release_ver }}.linux-amd64/node_exporter ./app/node_exporter
      - name: 打包app.tgz
        run: |
          tar zcvf app.tgz app ui
-         mv app.tgz package/
+         mv app.tgz node_exporter/
      - name: 打包package
        run: |
-         tar zcvf appstore.prometheus.node_exporter.${{ env.release_ver }}.tgz package
+         tar zcvf appstore.prometheus.node_exporter.${{ env.release_ver }}.tgz node_exporter
      - name: 上传应用包
        uses: actions/upload-artifact@master
        with:
          name: appstore.prometheus.node_exporter.${{ env.release_ver }}.tgz
          path: appstore.prometheus.node_exporter.${{ env.release_ver }}.tgz
+     - name: Download Artifacts
+       uses: actions/download-artifact@v4
+       with:
+         path: release-artifacts-${{ github.run_id }}
+     - name: Prepare Artifacts for Upload
+       run: |
+         # Create a new directory for release assets
+         mkdir -p release-assets
+         
+         # Find and copy all artifacts to a flat directory structure
+         find ./release-artifacts-${{ github.run_id }} -type f -exec cp -v {} ./release-assets \;
+         
+         # Generate checksums
+         cd release-assets
+         sha256sum * > SHA256SUMS.txt
+         cd ..
+         
+         echo "Artifacts prepared for upload:"
+         ls -lh ./release-assets
+
+     - name: Create GitHub Release
+       if: ${{ inputs.make_release }}
+       uses: actions/create-release@v1
+       env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       with:
+         tag_name: ${{ env.release_ver }}
+         prerelease: true
+         release_name: "fnnas.appstore.prometheus.node_exporter.${{ env.release_ver }}"
+
+     - name: Upload Release Assets
+       if: ${{ inputs.make_release }}
+       env:
+         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       run: |
+         echo "Uploading release assets..."
+         
+         # Upload all files in the release-assets directory
+         for file in ./release-assets/*; do
+           echo "Uploading $file"
+           gh release upload "${{ env.release_ver }}" "$file" || echo "Failed to upload $file"
+         done
+         
+         echo "Upload completed!"
+
+     - name: Verify Uploaded Assets
+       if: ${{ inputs.make_release }}
+       run: |
+         echo "Uploaded assets:"
+         gh release view "${{ env.release_ver }}" --json assets -q '.assets[].name'
