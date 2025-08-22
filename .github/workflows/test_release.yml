@@ -1,5 +1,5 @@
 name: Test Release
-run-name: ${{ github.actor }} build
+run-name: ${{ github.actor }} build ${{ github.ref_name }} ${{ github.sha }}
 
 permissions:
   contents: write
@@ -21,6 +21,7 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       release_ver: "1.9.1"
+      pkg_ver: "1.9.1-2"
     steps:
      - name: Check out repository code
        uses: actions/checkout@v4
@@ -43,12 +44,12 @@ jobs:
          mv app.tgz node_exporter/
      - name: 打包package
        run: |
-         tar zcvf appstore.prometheus.node_exporter.${{ env.release_ver }}.tgz node_exporter
+         tar zcvf appstore.prometheus.node_exporter.${{ env.pkg_ver }}.tgz node_exporter
      - name: 上传应用包
        uses: actions/upload-artifact@master
        with:
-         name: appstore.prometheus.node_exporter.${{ env.release_ver }}.tgz
-         path: appstore.prometheus.node_exporter.${{ env.release_ver }}.tgz
+         name: appstore.prometheus.node_exporter.${{ env.pkg_ver }}.tgz
+         path: appstore.prometheus.node_exporter.${{ env.pkg_ver }}.tgz
      - name: Download Artifacts
        uses: actions/download-artifact@v4
        with:
@@ -75,9 +76,9 @@ jobs:
        env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
        with:
-         tag_name: ${{ env.release_ver }}
+         tag_name: ${{ env.pkg_ver }}
          prerelease: true
-         release_name: "fnnas.appstore.prometheus.node_exporter.${{ env.release_ver }}"
+         release_name: "fnnas.appstore.prometheus.node_exporter.${{ env.pkg_ver }}"
 
      - name: Upload Release Assets
        if: ${{ inputs.make_release }}
@@ -89,7 +90,7 @@ jobs:
          # Upload all files in the release-assets directory
          for file in ./release-assets/*; do
            echo "Uploading $file"
-           gh release upload "${{ env.release_ver }}" "$file" || echo "Failed to upload $file"
+           gh release upload "${{ env.pkg_ver }}" "$file" || echo "Failed to upload $file"
          done
          
          echo "Upload completed!"
@@ -98,4 +99,4 @@ jobs:
        if: ${{ inputs.make_release }}
        run: |
          echo "Uploaded assets:"
-         gh release view "${{ env.release_ver }}" --json assets -q '.assets[].name'
+         gh release view "${{ env.pkg_ver }}" --json assets -q '.assets[].name'

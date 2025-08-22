@@ -1,4 +1,4 @@
-version="1.9.1-1"
+version="1.9.1-2"
 appname="prometheus.node_exporter"
 desc="prometheus的node_exporter组件，提供监控数据源<br>监听端口9100<br>详情可参考官方文档<br>该软件包由飞牛社区用户提供，由飞牛社区用户自行维护"
 display_name="prometheus.node_exporter"
