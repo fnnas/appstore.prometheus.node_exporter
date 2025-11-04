@@ -31,6 +31,11 @@ start)
 		if [ "$CPU4" -lt 0 ]; then
 			CPU4=0
 		fi
+		if modprobe -v drivetemp;then
+		  echo "load drivetemp succ"
+		else
+		  echo "load drivetemp fail"
+		fi
 		echo "taskset -c ${CPU1},${CPU2},${CPU3},${CPU4} ${EXEC_CMDLINE}"
 		nohup taskset -c ${CPU1},${CPU2},${CPU3},${CPU4} ${EXEC_CMDLINE} >>${LOG_FILE} 2>&1 &
 		RETVAL=$?
@@ -42,7 +47,7 @@ start)
 	fi
 	;;
 stop)
-	pkill -9 node_exporter
+	pkill -9 node_exporter || echo "pkill fail $?"
 	;;
 status)
 	processNum=$(ps -fe | grep app/node_exporter | grep -v grep | grep -v tail | wc -l)

@@ -20,8 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      release_ver: "1.9.1"
-      pkg_ver: "1.9.1-2"
+      release_ver: "1.10.2"
+      pkg_ver: "1.10.2-1"
     steps:
      - name: Check out repository code
        uses: actions/checkout@v4
