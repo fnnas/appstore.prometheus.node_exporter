@@ -1,0 +1,61 @@
+name: pack_amd64
+run-name: ${{ github.actor }} build ${{ github.ref_name }} sha ${{ github.sha }}
+
+permissions:
+  contents: write
+  actions: write
+on:
+  workflow_call:
+    inputs:
+      target_version:
+        required: true
+        type: string
+        default: ""
+      this_pack_manifest_version:
+        required: true
+        type: string
+        default: ""
+jobs:
+  build_appstore_package_amd64:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      target_version: ${{ inputs.target_version }}
+      target_pack_arch: "amd64"
+      this_pack_manifest_version: ${{ inputs.this_pack_manifest_version }}
+      this_pack_manifest_arch: "x86_64"
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: List files in the repository
+        run: |
+          pwd
+          ls -l
+      - name: 下载压缩文件
+        run: |
+          wget https://github.com/prometheus/node_exporter/releases/download/v${{ env.target_version }}/node_exporter-${{ env.target_version }}.linux-${{ env.target_pack_arch }}.tar.gz
+      - name: 解压压缩文件
+        run: |
+          tar -zxvf node_exporter-${{ env.target_version }}.linux-${{ env.target_pack_arch }}.tar.gz
+      - name: 移动node_exporter可执行文件
+        run: |
+          mv node_exporter-${{ env.target_version }}.linux-${{ env.target_pack_arch }}/node_exporter ./app/node_exporter
+      - name: 替换架构及版本号信息
+        run: |
+          sed "s/target_version/${{ env.target_version }}/g" -i ./node_exporter/manifest
+          sed "s/target_pack_arch/${{ env.target_pack_arch }}/g" -i ./node_exporter/manifest
+          sed "s/this_pack_manifest_version/${{ env.this_pack_manifest_version }}/g" -i ./node_exporter/manifest
+          sed "s/this_pack_manifest_arch/x86_64/g" -i ./node_exporter/manifest
+          sed "s/this_pack_manifest_platform/x86/g" -i ./node_exporter/manifest
+      - name: 打包app.tgz
+        run: |
+          tar zcvf app.tgz app ui
+          mv app.tgz node_exporter/
+      - name: 打包package
+        run: |
+          tar zcvf appstore.prometheus.node_exporter.${{ env.this_pack_manifest_version }}.${{ env.target_pack_arch }}.tgz node_exporter
+      - name: 上传应用包
+        uses: actions/upload-artifact@master
+        with:
+          name: appstore.prometheus.node_exporter.${{ env.this_pack_manifest_version }}.${{ env.target_pack_arch }}.tgz
+          path: appstore.prometheus.node_exporter.${{ env.this_pack_manifest_version }}.${{ env.target_pack_arch }}.tgz
