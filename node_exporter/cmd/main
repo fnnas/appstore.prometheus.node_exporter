@@ -4,7 +4,7 @@ echo -e "$(date +'%Y/%m/%d %H:%M:%S')\t" $0 $*
 PACKAGE_BASE=${TRIM_APPDEST}
 EXEC_BIN="${PACKAGE_BASE}/app/node_exporter"
 #EXEC_ARGS=" --collector.processes --collector.interrupts --collector.wifi --collector.tcpstat"
-EXEC_ARGS=" "
+EXEC_ARGS="  --collector.rapl.enable-zone-label"
 LOG_FILE="/var/log/node_exporter.log"
 #LOCKFILE="/var/lock/subsys/node_exporter"
 
