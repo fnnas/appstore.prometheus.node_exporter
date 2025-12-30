@@ -12,32 +12,29 @@ EXEC_CMDLINE="${EXEC_BIN} ${EXEC_ARGS}"
 
 case $1 in
 start)
-	processNum=$(ps -fe | grep app/node_exporter | grep -v grep | grep -v tail | wc -l)
+	processNum=$(pgrep -c node_exporter)
 	if [[ ! $processNum -eq 0 ]]; then
 		echo "is already running"
 		exit 0
 	else
-		CPU_COUNT=$(nproc)
-		CPU1=$((CPU_COUNT - 1))
-		CPU2=$((CPU_COUNT - 2))
-		CPU3=$((CPU_COUNT - 3))
-		CPU4=$((CPU_COUNT - 4))
-		if [ "$CPU2" -lt 0 ]; then
-			CPU2=0
-		fi
-		if [ "$CPU3" -lt 0 ]; then
-			CPU3=0
-		fi
-		if [ "$CPU4" -lt 0 ]; then
-			CPU4=0
-		fi
 		if modprobe -v drivetemp;then
 		  echo "load drivetemp succ"
 		else
 		  echo "load drivetemp fail"
 		fi
-		echo "taskset -c ${CPU1},${CPU2},${CPU3},${CPU4} ${EXEC_CMDLINE}"
-		nohup taskset -c ${CPU1},${CPU2},${CPU3},${CPU4} ${EXEC_CMDLINE} >>${LOG_FILE} 2>&1 &
+
+		CPU_COUNT=$(nproc)
+    BIND_COUNT=4
+    [ "$CPU_COUNT" -lt "$BIND_COUNT" ] && BIND_COUNT="$CPU_COUNT"
+    START_CPU=$((CPU_COUNT - BIND_COUNT))
+    CPU_LIST=""
+    for i in $(seq 0 $((BIND_COUNT - 1))); do
+				CPU_LIST="${CPU_LIST}$((START_CPU + i)),"
+    done
+    CPU_LIST=${CPU_LIST%,}
+
+		echo "taskset -c ${CPU_LIST} ${EXEC_CMDLINE}"
+		nohup taskset -c ${CPU_LIST} ${EXEC_CMDLINE} >>${LOG_FILE} 2>&1 &
 		RETVAL=$?
 		if [ $RETVAL -eq 0 ]; then
 			exit 0
@@ -50,7 +47,7 @@ stop)
 	pkill -9 node_exporter || echo "pkill fail $?"
 	;;
 status)
-	processNum=$(ps -fe | grep app/node_exporter | grep -v grep | grep -v tail | wc -l)
+	processNum=$(pgrep -c node_exporter)
 	if [[ ! $processNum -eq 0 ]]; then
 		echo "is already running"
 		exit 0
