@@ -34,6 +34,7 @@ start)
     CPU_LIST=${CPU_LIST%,}
 
 		echo "taskset -c ${CPU_LIST} ${EXEC_CMDLINE}"
+		echo -e "$(date +'%Y/%m/%d %H:%M:%S') clear log" > ${LOG_FILE}
 		nohup taskset -c ${CPU_LIST} ${EXEC_CMDLINE} >>${LOG_FILE} 2>&1 &
 		RETVAL=$?
 		if [ $RETVAL -eq 0 ]; then
