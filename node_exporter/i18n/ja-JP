@@ -1,0 +1,2 @@
+[manifest]
+desc="Prometheus exporterハ、*NIX系中核ノ公開スル硬體及ビ作業系統指標ヲ収集スルモノニシテ、Go言語ニテ記述セラレ、差替可能ナル指標収集器ヲ具ヘ候。<br>既定ニテ通信口9100ヲ待受ケ候。<br>安全上ノ注意：防火壁、通信口転送及ビ接続制御ハ愼重ニ設定セラレ度候。設定不備ノ場合、主計算機ノ性能指標、硬體状態及ビ実行環境情報ノ一部ヲ露出スル虞有之候。<br>使用方法ハ<a target="_blank" href="https://github.com/prometheus/node_exporter/">公式文書</a>ヲ參照セラレ度候。<br>"

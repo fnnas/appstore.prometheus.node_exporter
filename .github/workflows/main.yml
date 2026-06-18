@@ -18,7 +18,7 @@ on:
 env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   target_version: "1.11.1"
-  this_pack_manifest_version: "1.11.1-13"
+  this_pack_manifest_version: "1.11.1-14"
 jobs:
   setup:
     runs-on: ubuntu-latest
