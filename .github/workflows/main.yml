@@ -84,7 +84,7 @@ jobs:
        with:
          tag_name: ${{ env.this_pack_manifest_version }}
          prerelease: true
-         release_name: "fnnas.appstore.prometheus.node_exporter.${{ env.this_pack_manifest_version }}"
+         release_name: "${{ env.this_pack_manifest_version }}"
 
      - name: Upload Release Assets
        if: ${{ inputs.make_release }}

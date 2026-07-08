@@ -1,2 +1,2 @@
 [manifest]
-desc="Prometheus exporter是一个用于收集 *NIX 内核公开的硬件和操作系统指标的工具，采用 Go 语言编写，并支持可插拔的指标收集器。<br>默认监听端口9100<br>安全提示：请谨慎配置防火墙、端口映射和访问授权，配置不当可能暴露宿主机性能指标、硬件状态和部分运行环境信息<br>使用方式可参考<a target="_blank" href="https://github.com/prometheus/node_exporter/">官方文档</a><br>该软件包由飞牛社区用户提供，由飞牛社区用户自行维护"
+desc="Prometheus exporter是一个用于收集 *NIX 内核公开的硬件和操作系统指标的工具，采用 Go 语言编写，并支持可插拔的指标收集器。<br>默认监听端口9100<br>安全提示：请谨慎配置防火墙、端口映射和访问授权，配置不当可能暴露宿主机性能指标、硬件状态和部分运行环境信息<br>使用方式可参考<a target="_blank" href="https://github.com/prometheus/node_exporter/">官方文档</a><br>该软件包由社区用户提供，由社区用户自行维护"
