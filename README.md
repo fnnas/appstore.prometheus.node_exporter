@@ -127,8 +127,8 @@ scrape_configs:
 
 | 变量 | 当前值 | 说明 |
 | --- | --- | --- |
-| `target_version` | `1.11.1` | Prometheus 官方 `node_exporter` 版本 |
-| `this_pack_manifest_version` | `1.11.1-13` | 应用商店包版本，同时作为 Release tag |
+| `target_version` | `1.12.1` | Prometheus 官方 `node_exporter` 版本 |
+| `this_pack_manifest_version` | `1.12.1-1` | 应用商店包版本，同时作为 Release tag |
 
 执行流程：
 
@@ -283,8 +283,8 @@ cat /var/log/node_exporter.log
 
 ```yaml
 env:
-  target_version: "1.11.1"
-  this_pack_manifest_version: "1.11.1-13"
+  target_version: "1.12.1"
+  this_pack_manifest_version: "1.12.1-1"
 ```
 
 维护建议：

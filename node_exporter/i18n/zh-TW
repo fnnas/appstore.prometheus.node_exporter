@@ -1,0 +1,2 @@
+[manifest]
+desc="Prometheus exporter 是用於收集 *NIX 核心公開之硬體與作業系統指標的工具，以 Go 語言編寫，並支援可插拔的指標收集器。<br>預設監聽連接埠 9100。<br>安全提醒：請謹慎設定防火牆、連接埠轉送與存取授權。設定不當可能暴露主機效能指標、硬體狀態及部分執行環境資訊。<br>使用方式請參閱<a target="_blank" href="https://github.com/prometheus/node_exporter/">官方文件</a>。<br>此軟體套件由社群使用者提供並自行維護。"
